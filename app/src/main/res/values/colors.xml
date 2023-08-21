@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#9b0493</color>
+    <color name="primary_dark">#9b0493</color>
+    <color name="accent">#D81B60</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#CCCCCC</color>
+    <color name="background_start_color_evening">#38068f</color>
+    <color name="background_end_color_evening">#9b0493</color>
+    <color name="background_transparent_color">#55000000</color>
+    <color name="indicator_selected">#FFFFFF</color>
+    <color name="indicator_default">#FFCCCCCC</color>
+</resources>

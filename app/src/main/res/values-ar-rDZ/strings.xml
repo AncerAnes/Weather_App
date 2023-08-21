@@ -1,0 +1,54 @@
+<resources
+    xmlns:xliff="http://example.com/xliff-namespace">
+    <string name="app_name">أحوال الطقس</string>
+    <string name="wind_label">الرياح</string>
+    <string name="pressure_label">الضغط</string>
+    <string name="humidity_label">الرطوبة</string>
+
+    <!-- Wind in kph -->
+    <string name="format_wind_kmh">
+   <xliff:g id="speed">%1$1.0f</xliff:g> كم/س
+   <xliff:g id="direction">%2$s</xliff:g>
+</string>
+
+    <!-- Wind in mph -->
+    <string name="format_wind_mph">
+   <xliff:g id="speed">%1$1.0f</xliff:g> م/س
+   <xliff:g id="direction">%2$s</xliff:g>
+</string>
+
+    <!-- Pressure format -->
+    <string name="format_pressure">
+   <xliff:g id="pressure">%1.0f</xliff:g> هكتوبسكال
+</string>
+
+    <!-- Humidity format -->
+    <string name="format_humidity">
+   <xliff:g id="humidity">%1.0f</xliff:g> %%
+</string>
+
+    <!-- - - - - - - - - - - - - - - - -
+     - Wind Directions                -
+     - - - - - - - - - - - - - - - - -->
+    <string name="unknown_direction">غير معروف</string>
+    <string name="north">شمال</string>
+    <string name="east">شرق</string>
+    <string name="west">غرب</string>
+    <string name="south">جنوب</string>
+    <string name="north_east">شمال شرق</string>
+    <string name="south_east">جنوب شرق</string>
+    <string name="north_west">شمال غرب</string>
+    <string name="south_west">جنوب غرب</string>
+
+    <!-- - - - - - - - - - - - - - -
+     - Used by CustomDateUtils          -
+     - - - - - - - - - - - - - - -->
+
+    <!-- For labelling today -->
+    <string name="today">اليوم</string>
+
+    <!-- For labelling tomorrow -->
+    <string name="tomorrow">غداً</string>
+
+
+</resources>
