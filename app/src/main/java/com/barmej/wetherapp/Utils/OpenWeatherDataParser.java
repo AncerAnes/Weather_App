@@ -120,6 +120,8 @@ public class OpenWeatherDataParser {
                 hoursForecasts.add(forecast);
             }
 
+
+
             String date = forecast.getDtTxt().split(" ")[0];
 
             if (!date.equals(currentDay)) {

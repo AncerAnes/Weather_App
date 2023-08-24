@@ -38,7 +38,7 @@ public class HoursForecastAdapter extends RecyclerView.Adapter<HoursForecastAdap
        Forecast forecast= mForecasts.get(position);
         int weatherImageId = WeatherUtils.getWeatherIcon(forecast.getWeather().get(0).getIcon());
         holder.iconImageView.setImageResource(weatherImageId);
-        String hourClockString = CustomDateUtils.getHourOfDayUTCTime(forecast.getDt());
+        String hourClockString = CustomDateUtils.getHourOfDay(forecast.getDt());
         holder.timeTextView.setText(hourClockString);
         double highTemperature = forecast.getMain().getTempMax();
         String highTemperatureString = mContext.getString(R.string.format_temperature, highTemperature);
