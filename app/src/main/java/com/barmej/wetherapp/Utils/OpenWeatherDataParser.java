@@ -39,9 +39,7 @@ public class OpenWeatherDataParser {
     private static final String OWM_WEATHER_DESCRIPTION = "description";
     private static final String OWM_WEATHER_ICON = "icon";
 
-    public static WeatherInfo getWeatherInfoObjectFromJson(String weatherInfoJsonString) throws JSONException {
-        // Convert json string to JSONObject
-        JSONObject jsonObject =new JSONObject(weatherInfoJsonString);
+    public static WeatherInfo getWeatherInfoObjectFromJson(JSONObject jsonObject) throws JSONException {
         // Weather description is in a child array called "weather", which is 1 element long.
         JSONObject weatherJsonObject=jsonObject.getJSONArray(OWM_WEATHER).getJSONObject(0);
         // Temperatures are sent by OpenWeatherMap in a child object called Main
@@ -78,8 +76,7 @@ public class OpenWeatherDataParser {
         return weatherInfo;
     }
 
-    public static ForecastLists getForecastsDataFromJson(String forecastJsonString) throws JSONException {
-        JSONObject forecastsJson = new JSONObject(forecastJsonString);
+    public static ForecastLists getForecastsDataFromJson(JSONObject forecastsJson) throws JSONException {
         JSONArray jsonForecastsArray = forecastsJson.getJSONArray(OWM_LIST);
 
         List<Forecast> hoursForecasts=new ArrayList<>();

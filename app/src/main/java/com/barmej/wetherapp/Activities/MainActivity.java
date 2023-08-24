@@ -14,6 +14,14 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.barmej.wetherapp.Data.Forecast;
 import com.barmej.wetherapp.Adapters.DaysForecastAdapter;
 import com.barmej.wetherapp.Adapters.HoursForecastAdapter;
@@ -28,6 +36,7 @@ import com.barmej.wetherapp.network.NetworkUtils;
 import com.google.android.material.tabs.TabLayout;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
@@ -43,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager mFragmentManager;
     private HeaderFragmentAdapter headerFragmentAdapter;
     private ViewPager viewPager;
-
+    private RequestQueue mRequestQueue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,69 +75,72 @@ public class MainActivity extends AppCompatActivity {
         mDaysForecastRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mDaysForecastRecyclerView.setAdapter(mDaysForecastsAdapter);
 
+        mRequestQueue=Volley.newRequestQueue(MainActivity.this);
+
         requestForecastsInfo();
         getRequestInfo();
     }
     //request and response of data in background thread
     private void getRequestInfo(){
-      new weatherDataGetTask().execute();
-    }
-    class weatherDataGetTask extends AsyncTask<Void, Integer, WeatherInfo> {
-
-        @Override
-        protected WeatherInfo doInBackground(Void... voids) {
-            URL weatherUrl = NetworkUtils.getWeatherUrl(MainActivity.this);
-            WeatherInfo weatherInfo;
-            try {
-                String weatherJsonResponse=NetworkUtils.getResponseFromHttpUrl(weatherUrl);
-                weatherInfo= OpenWeatherDataParser.getWeatherInfoObjectFromJson(weatherJsonResponse);
-                return weatherInfo;
-            }catch (IOException |JSONException e){
-                e.printStackTrace();
+        String weatherRequestUrl = NetworkUtils.getWeatherUrl(MainActivity.this).toString();
+        JsonObjectRequest weatherRequest=new JsonObjectRequest(
+                Request.Method.GET,
+                weatherRequestUrl,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        WeatherInfo weatherInfo = null;
+                        try {
+                            weatherInfo = OpenWeatherDataParser.getWeatherInfoObjectFromJson(response);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (weatherInfo != null) {
+                            headerFragmentAdapter.updateData(weatherInfo);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
             }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(WeatherInfo weatherInfo) {
-           if(weatherInfo != null){
-               headerFragmentAdapter.updateData(weatherInfo);
-           }
-        }
+        }) {
+        };
+        mRequestQueue.add(weatherRequest);
     }
+
     private void requestForecastsInfo() {
-        new ForecastsDataPullTask().execute();
-    }
-    class ForecastsDataPullTask extends AsyncTask<Void, Void, ForecastLists>{
-
-        @Override
-        protected ForecastLists doInBackground(Void... voids) {
-            URL forecastsRequestUrl=NetworkUtils.getForecastUrl(MainActivity.this);
-            ForecastLists forecastLists=null;
-
-            try {
-               String forecastsJsonResponse=NetworkUtils.getResponseFromHttpUrl(forecastsRequestUrl);
-               forecastLists=OpenWeatherDataParser.getForecastsDataFromJson(forecastsJsonResponse);
-               return forecastLists;
-            }
-
-            catch (IOException | JSONException e){
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ForecastLists forecastLists) {
-            super.onPostExecute(forecastLists);
-            if (forecastLists != null
-                    && forecastLists.getHoursForecasts() != null
-                    && forecastLists.getDaysForecasts() != null) {
-                mHoursForecastAdapter.updateData(forecastLists.getHoursForecasts());
-                mDaysForecastsAdapter.updateData(forecastLists.getDaysForecasts());
+        String forecastsRequestUrl=NetworkUtils.getForecastUrl(MainActivity.this).toString();
+        JsonObjectRequest forecastRequest= new JsonObjectRequest(
+                Request.Method.GET,
+                forecastsRequestUrl,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        ForecastLists forecastLists=null;
+                        try {
+                            forecastLists=OpenWeatherDataParser.getForecastsDataFromJson(response);
+                        }
+                        catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                        if (forecastLists != null
+                                && forecastLists.getHoursForecasts() != null
+                                && forecastLists.getDaysForecasts() != null) {
+                            mHoursForecastAdapter.updateData(forecastLists.getHoursForecasts());
+                            mDaysForecastsAdapter.updateData(forecastLists.getDaysForecasts());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
             }
         }
+        );
+        mRequestQueue.add(forecastRequest);
     }
 
     //for scrolling between fragments
