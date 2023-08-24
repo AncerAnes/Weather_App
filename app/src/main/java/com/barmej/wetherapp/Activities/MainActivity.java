@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager mFragmentManager;
     private HeaderFragmentAdapter headerFragmentAdapter;
     private ViewPager viewPager;
-    private RequestQueue mRequestQueue;
+    private NetworkUtils mNetworkUtils ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,8 +75,7 @@ public class MainActivity extends AppCompatActivity {
         mDaysForecastRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mDaysForecastRecyclerView.setAdapter(mDaysForecastsAdapter);
 
-        mRequestQueue=Volley.newRequestQueue(MainActivity.this);
-
+        mNetworkUtils = NetworkUtils.getInstance(this);
         requestForecastsInfo();
         getRequestInfo();
     }
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }) {
         };
-        mRequestQueue.add(weatherRequest);
+        mNetworkUtils.addRequestQueue(weatherRequest);
     }
 
     private void requestForecastsInfo() {
@@ -140,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         );
-        mRequestQueue.add(forecastRequest);
+        mNetworkUtils.addRequestQueue(forecastRequest);
     }
 
     //for scrolling between fragments

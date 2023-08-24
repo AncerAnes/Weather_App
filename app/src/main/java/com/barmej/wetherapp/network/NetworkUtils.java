@@ -4,6 +4,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.barmej.wetherapp.R;
 
 import java.io.IOException;
@@ -32,6 +35,31 @@ public class NetworkUtils {
 
     private static final String METRIC = "metric";
     private static final String IMPERIAL = "imperial";
+    private static NetworkUtils sInstance;
+    private static final Object LOCK= new Object();
+    private static Context mContext;
+    private RequestQueue mRequestQueue;
+    public static NetworkUtils getInstance(Context context){
+      if (sInstance==null) {
+          synchronized (LOCK){
+               if  (sInstance==null) sInstance= new NetworkUtils(context);
+          }
+      }
+     return sInstance;
+    }
+    private NetworkUtils(Context context){
+      mContext=context.getApplicationContext();
+      mRequestQueue=getRequestQueue();
+    }
+    public RequestQueue getRequestQueue(){
+        if(mRequestQueue == null){
+            mRequestQueue= Volley.newRequestQueue(mContext);
+        }
+        return mRequestQueue;
+    }
+    public <T>void addRequestQueue(Request<T>request){
+        getRequestQueue().add(request);
+    }
 
     public static URL getWeatherUrl(Context context){
         return buildUrl(context,WEATHER_ENDPOINT);
@@ -55,35 +83,6 @@ public class NetworkUtils {
             return url;
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public static String getResponseFromHttpUrl (URL url) throws IOException {
-        // this class It's about http client enabling us to make http connections and send and resev data form internet.
-        HttpURLConnection httpURLConnection =(HttpURLConnection) url.openConnection();
-        //to get data from server
-        httpURLConnection.setRequestMethod("GET");
-        //to do the connection and sending the request
-        httpURLConnection.connect();
-        try {
-        //to read the response
-            InputStream inputStream=httpURLConnection.getInputStream();
-        //to read data from input stream and set it in String
-            Scanner scanner=new Scanner(inputStream);
-            //allow you to put a regular  expression string,it stops when the expression ending with A.
-            scanner.useDelimiter("\\A");
-            //Checks if there is more input data to read from the scanner
-            boolean hasInput= scanner.hasNext();
-            String response=null;
-            if (hasInput){
-                response =scanner.next();
-            }
-            scanner.close();
-            Log.d(Tag,"response:"+response);
-            return response;
-        }finally {
-            //to make end to connection if there are problems
-            httpURLConnection.disconnect();
         }
     }
 }
