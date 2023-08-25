@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private HeaderFragmentAdapter headerFragmentAdapter;
     private ViewPager viewPager;
     private NetworkUtils mNetworkUtils ;
+    private static final String TAG =MainActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.d(TAG,"Weather Requests Received");
                         WeatherInfo weatherInfo = null;
                         try {
                             weatherInfo = OpenWeatherDataParser.getWeatherInfoObjectFromJson(response);
@@ -106,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }) {
         };
+        weatherRequest.setTag(TAG);
         mNetworkUtils.addRequestQueue(weatherRequest);
     }
 
@@ -118,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.d(TAG,"Forecasts Requests Received");
                         ForecastLists forecastLists=null;
                         try {
                             forecastLists=OpenWeatherDataParser.getForecastsDataFromJson(response);
@@ -139,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         );
+        forecastRequest.setTag(TAG);
         mNetworkUtils.addRequestQueue(forecastRequest);
     }
 
@@ -178,5 +184,11 @@ public class MainActivity extends AppCompatActivity {
             ((PrimaryWeatherInfoFragment) fragments.get(0)).updateWeatherInfo(weatherInfo);
             ((SecondaryWeatherInfoFragment) fragments.get(1)).updateWeatherInfo(weatherInfo);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mNetworkUtils.cancelRequests(TAG);
     }
 }

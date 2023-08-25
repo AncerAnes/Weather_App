@@ -60,6 +60,9 @@ public class NetworkUtils {
     public <T>void addRequestQueue(Request<T>request){
         getRequestQueue().add(request);
     }
+    public void cancelRequests(String tag){
+      getRequestQueue().cancelAll(tag);
+    }
 
     public static URL getWeatherUrl(Context context){
         return buildUrl(context,WEATHER_ENDPOINT);
