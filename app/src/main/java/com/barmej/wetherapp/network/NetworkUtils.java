@@ -8,6 +8,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.barmej.wetherapp.R;
+import com.barmej.wetherapp.Utils.sharedPreferenceHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,9 +75,9 @@ public class NetworkUtils {
 
     private static URL buildUrl(Context context,String endPoint){
         Uri.Builder uriBuilder=Uri.parse(BASE_URL+endPoint).buildUpon();
-        Uri uri=uriBuilder.appendQueryParameter(QUERY_PARAM,context.getString(R.string.pref_location_default))
+        Uri uri=uriBuilder.appendQueryParameter(QUERY_PARAM, sharedPreferenceHelper.getPreferredWeatherLocation(context))
                 .appendQueryParameter(FORMAT_PARAM,FORMAT)
-                .appendQueryParameter(UNITS_PARAM,METRIC)
+                .appendQueryParameter(UNITS_PARAM,sharedPreferenceHelper.getMeasurementSystem(context))
                 .appendQueryParameter(LANG_PARAM, Locale.getDefault().getLanguage())
                 .appendQueryParameter(APP_ID_PARAM,context.getString(R.string.api_key))
                 .build();

@@ -51,4 +51,9 @@
     <string name="tomorrow">غداً</string>
 
 
+    <string name="action_settings" >الاعدادات</string>
+    <string name="pref_location_label">Location</string>
+    <string name="pref_unit_label">نظام القياس</string>
+    <string name="pref_label_metric"> النظام المتري</string>
+    <string name="pref_label_imperial"> النظام الامبراطوري</string>
 </resources>

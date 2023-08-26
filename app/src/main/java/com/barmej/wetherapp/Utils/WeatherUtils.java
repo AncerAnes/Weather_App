@@ -25,8 +25,11 @@ public final class WeatherUtils {
      * @return Wind String in the following form: "2 km/h SW"
      */
     public static String getFormattedWind(Context context, double windSpeed, double degrees) {
-
         int windStringFormat = R.string.format_wind_kmh;
+        String preferredMeasurementSystem =sharedPreferenceHelper.getMeasurementSystem(context);
+        if(preferredMeasurementSystem.equals(context.getString(R.string.pref_unit_imperial))){
+            windStringFormat=R.string.format_wind_mph;
+        }
 
         String direction = "Unknown";
         if (degrees >= 337.5 || degrees < 22.5) {
