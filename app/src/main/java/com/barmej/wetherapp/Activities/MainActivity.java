@@ -16,7 +16,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mHoursForecastsRecyclerView;
     private RecyclerView mDaysForecastRecyclerView;
     private FragmentManager mFragmentManager;
+    private FrameLayout mHeaderLayout;
     private HeaderFragmentAdapter headerFragmentAdapter;
     private ViewPager viewPager;
     private NetworkUtils mNetworkUtils ;
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //for scrolling between fragments
         mFragmentManager = getSupportFragmentManager();
+        mHeaderLayout= (FrameLayout) findViewById(R.id.header);
        viewPager =(ViewPager) findViewById(R.id.pager);
        headerFragmentAdapter = new HeaderFragmentAdapter(mFragmentManager);
        viewPager.setAdapter(headerFragmentAdapter);
@@ -85,6 +89,10 @@ public class MainActivity extends AppCompatActivity {
         mNetworkUtils = NetworkUtils.getInstance(this);
         requestForecastsInfo();
         getRequestInfo();
+
+        mHeaderLayout.setVisibility(View.INVISIBLE);
+        mDaysForecastRecyclerView.setVisibility(View.INVISIBLE);
+        mHoursForecastsRecyclerView.setVisibility(View.INVISIBLE);
     }
     //request and response of data in background thread
     private void getRequestInfo(){
@@ -105,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         if (weatherInfo != null) {
                             headerFragmentAdapter.updateData(weatherInfo);
+                            mHeaderLayout.setVisibility(View.VISIBLE);
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -112,8 +121,8 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
             }
-        }) {
-        };
+        }
+        ) ;
         weatherRequest.setTag(TAG);
         mNetworkUtils.addRequestQueue(weatherRequest);
     }
@@ -140,12 +149,15 @@ public class MainActivity extends AppCompatActivity {
                                 && forecastLists.getDaysForecasts() != null) {
                             mHoursForecastAdapter.updateData(forecastLists.getHoursForecasts());
                             mDaysForecastsAdapter.updateData(forecastLists.getDaysForecasts());
+                            mHoursForecastsRecyclerView.setVisibility(View.VISIBLE);
+                            mDaysForecastRecyclerView.setVisibility(View.VISIBLE);
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(MainActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
+
             }
         }
         );
