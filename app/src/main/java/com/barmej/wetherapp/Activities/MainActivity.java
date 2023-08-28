@@ -36,7 +36,9 @@ import com.barmej.wetherapp.Data.ForecastLists;
 import com.barmej.wetherapp.Data.Weather;
 import com.barmej.wetherapp.Data.WeatherInfo;
 import com.barmej.wetherapp.R;
+import com.barmej.wetherapp.Utils.CustomDateUtils;
 import com.barmej.wetherapp.Utils.OpenWeatherDataParser;
+import com.barmej.wetherapp.Utils.sharedPreferenceHelper;
 import com.barmej.wetherapp.fragments.PrimaryWeatherInfoFragment;
 import com.barmej.wetherapp.fragments.SecondaryWeatherInfoFragment;
 import com.barmej.wetherapp.network.NetworkUtils;
@@ -87,12 +89,14 @@ public class MainActivity extends AppCompatActivity {
         mDaysForecastRecyclerView.setAdapter(mDaysForecastsAdapter);
 
         mNetworkUtils = NetworkUtils.getInstance(this);
+
         requestForecastsInfo();
         getRequestInfo();
 
         mHeaderLayout.setVisibility(View.INVISIBLE);
         mDaysForecastRecyclerView.setVisibility(View.INVISIBLE);
         mHoursForecastsRecyclerView.setVisibility(View.INVISIBLE);
+
     }
     //request and response of data in background thread
     private void getRequestInfo(){
@@ -228,9 +232,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onStop() {
         super.onStop();
         mNetworkUtils.cancelRequests(TAG);
     }
 }
+

@@ -10,4 +10,8 @@
     <color name="background_transparent_color">#55000000</color>
     <color name="indicator_selected">#FFFFFF</color>
     <color name="indicator_default">#FFCCCCCC</color>
+    <color name="background_end_color_morning">#0691cb</color>
+    <color name="background_start_color_morning">#064d8f</color>
+    <color name="background_end_color_afternoon">#cb8306</color>
+    <color name="background_start_color_afternoon">#8f4a06</color>
 </resources>

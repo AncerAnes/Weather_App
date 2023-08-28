@@ -7,6 +7,15 @@ public class WeatherInfo {
     private Main main;
     private Wind wind;
     private long dt;
+    private  Sys sys;
+    public Sys getSys() {
+        return sys;
+    }
+
+    public void setSys(Sys sys) {
+        this.sys = sys;
+    }
+
 
     public List<Weather> getWeather() {
         return weather;
