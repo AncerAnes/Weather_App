@@ -1,22 +1,28 @@
 package com.barmej.wetherapp.network;
 
+import android.app.GameState;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.barmej.wetherapp.R;
 import com.barmej.wetherapp.Utils.sharedPreferenceHelper;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Scanner;
+
+import kotlin.jvm.Synchronized;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NetworkUtils {
     private static String Tag=NetworkUtils.class.getSimpleName();
@@ -39,8 +45,9 @@ public class NetworkUtils {
     private static NetworkUtils sInstance;
     private static final Object LOCK= new Object();
     private static Context mContext;
-    private RequestQueue mRequestQueue;
-    public static NetworkUtils getInstance(Context context){
+    private OpenWeatherApiInterface openWeatherApiInterface;
+
+    public static   NetworkUtils getInstance(Context context){
       if (sInstance==null) {
           synchronized (LOCK){
                if  (sInstance==null) sInstance= new NetworkUtils(context);
@@ -49,44 +56,28 @@ public class NetworkUtils {
      return sInstance;
     }
     private NetworkUtils(Context context){
-      mContext=context.getApplicationContext();
-      mRequestQueue=getRequestQueue();
-    }
-    public RequestQueue getRequestQueue(){
-        if(mRequestQueue == null){
-            mRequestQueue= Volley.newRequestQueue(mContext);
-        }
-        return mRequestQueue;
-    }
-    public <T>void addRequestQueue(Request<T>request){
-        getRequestQueue().add(request);
-    }
-    public void cancelRequests(String tag){
-      getRequestQueue().cancelAll(tag);
-    }
-
-    public static URL getWeatherUrl(Context context){
-        return buildUrl(context,WEATHER_ENDPOINT);
-    }
-
-    public static URL getForecastUrl(Context context){
-        return buildUrl(context,FORECAST_ENDPOINT);
-    }
-
-    private static URL buildUrl(Context context,String endPoint){
-        Uri.Builder uriBuilder=Uri.parse(BASE_URL+endPoint).buildUpon();
-        Uri uri=uriBuilder.appendQueryParameter(QUERY_PARAM, sharedPreferenceHelper.getPreferredWeatherLocation(context))
-                .appendQueryParameter(FORMAT_PARAM,FORMAT)
-                .appendQueryParameter(UNITS_PARAM,sharedPreferenceHelper.getMeasurementSystem(context))
-                .appendQueryParameter(LANG_PARAM, Locale.getDefault().getLanguage())
-                .appendQueryParameter(APP_ID_PARAM,context.getString(R.string.api_key))
+        mContext=context.getApplicationContext();
+        HttpLoggingInterceptor interceptor =new HttpLoggingInterceptor();
+        interceptor.level(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+        Retrofit retrofit=new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 .build();
-        try {
-            URL url =new URL(uri.toString());
-            Log.d(Tag,"url:"+url);
-            return url;
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+        openWeatherApiInterface=retrofit.create(OpenWeatherApiInterface.class);
+    }
+    public OpenWeatherApiInterface getApiInterface(){
+        return openWeatherApiInterface;
+    }
+
+    public  HashMap <String,String> getQueryMap(){
+        HashMap <String,String> map =new HashMap<>();
+        map.put(QUERY_PARAM, sharedPreferenceHelper.getPreferredWeatherLocation(mContext));
+        map.put(FORMAT_PARAM,FORMAT);
+        map.put(UNITS_PARAM,sharedPreferenceHelper.getMeasurementSystem(mContext));
+        map.put(LANG_PARAM, Locale.getDefault().getLanguage());
+        map.put(APP_ID_PARAM,mContext.getString(R.string.api_key));
+       return map;
     }
 }

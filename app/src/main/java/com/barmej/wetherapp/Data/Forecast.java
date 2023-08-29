@@ -1,5 +1,7 @@
 package com.barmej.wetherapp.Data;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class Forecast {
@@ -47,5 +49,6 @@ public class Forecast {
     private Main main;
     private List<Weather> weather = null;
     private Wind wind;
+@SerializedName("dt_txt")
     private String dtTxt;
 }

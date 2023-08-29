@@ -21,20 +21,13 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.barmej.wetherapp.Data.Forecast;
 import com.barmej.wetherapp.Adapters.DaysForecastAdapter;
 import com.barmej.wetherapp.Adapters.HoursForecastAdapter;
 import com.barmej.wetherapp.Data.ForecastLists;
 import com.barmej.wetherapp.Data.Weather;
 import com.barmej.wetherapp.Data.WeatherInfo;
+import com.barmej.wetherapp.Data.weatherForecasts;
 import com.barmej.wetherapp.R;
 import com.barmej.wetherapp.Utils.CustomDateUtils;
 import com.barmej.wetherapp.Utils.OpenWeatherDataParser;
@@ -52,6 +45,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+
 public class MainActivity extends AppCompatActivity {
     private HoursForecastAdapter mHoursForecastAdapter;
     private DaysForecastAdapter mDaysForecastsAdapter;
@@ -65,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
     private NetworkUtils mNetworkUtils ;
     private static final String TAG =MainActivity.class.getSimpleName();
     private static final int Requests_Settings =0;
+    private Call <WeatherInfo> mWeatherInfoCall;
+    private Call<weatherForecasts> mForecastsCall;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         mNetworkUtils = NetworkUtils.getInstance(this);
 
         requestForecastsInfo();
-        getRequestInfo();
+        requestWeatherInfo();
 
         mHeaderLayout.setVisibility(View.INVISIBLE);
         mDaysForecastRecyclerView.setVisibility(View.INVISIBLE);
@@ -99,74 +100,43 @@ public class MainActivity extends AppCompatActivity {
 
     }
     //request and response of data in background thread
-    private void getRequestInfo(){
-        String weatherRequestUrl = NetworkUtils.getWeatherUrl(MainActivity.this).toString();
-        JsonObjectRequest weatherRequest=new JsonObjectRequest(
-                Request.Method.GET,
-                weatherRequestUrl,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG,"Weather Requests Received");
-                        WeatherInfo weatherInfo = null;
-                        try {
-                            weatherInfo = OpenWeatherDataParser.getWeatherInfoObjectFromJson(response);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if (weatherInfo != null) {
-                            headerFragmentAdapter.updateData(weatherInfo);
-                            mHeaderLayout.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }, new Response.ErrorListener() {
+    private void requestWeatherInfo(){
+        mWeatherInfoCall=mNetworkUtils.getApiInterface().getWeatherInfo(mNetworkUtils.getQueryMap());
+        mWeatherInfoCall.enqueue(new Callback<WeatherInfo>() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+            public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
+              if(response.code()==200){
+                  WeatherInfo weatherInfo=response.body();
+                  headerFragmentAdapter.updateData(weatherInfo);
+                  mHeaderLayout.setVisibility(View.VISIBLE);
+              }
             }
-        }
-        ) ;
-        weatherRequest.setTag(TAG);
-        mNetworkUtils.addRequestQueue(weatherRequest);
+            @Override
+            public void onFailure(Call<WeatherInfo> call, Throwable t) {
+              Toast.makeText(MainActivity.this,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void requestForecastsInfo() {
-        String forecastsRequestUrl=NetworkUtils.getForecastUrl(MainActivity.this).toString();
-        JsonObjectRequest forecastRequest= new JsonObjectRequest(
-                Request.Method.GET,
-                forecastsRequestUrl,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG,"Forecasts Requests Received");
-                        ForecastLists forecastLists=null;
-                        try {
-                            forecastLists=OpenWeatherDataParser.getForecastsDataFromJson(response);
-                        }
-                        catch (JSONException e){
-                            e.printStackTrace();
-                        }
-                        if (forecastLists != null
-                                && forecastLists.getHoursForecasts() != null
-                                && forecastLists.getDaysForecasts() != null) {
-                            mHoursForecastAdapter.updateData(forecastLists.getHoursForecasts());
-                            mDaysForecastsAdapter.updateData(forecastLists.getDaysForecasts());
-                            mHoursForecastsRecyclerView.setVisibility(View.VISIBLE);
-                            mDaysForecastRecyclerView.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
-
-            }
-        }
-        );
-        forecastRequest.setTag(TAG);
-        mNetworkUtils.addRequestQueue(forecastRequest);
+     mForecastsCall=mNetworkUtils.getApiInterface().getForecast(mNetworkUtils.getQueryMap());
+     mForecastsCall.enqueue(new Callback<weatherForecasts>() {
+         @Override
+         public void onResponse(Call<weatherForecasts> call, Response<weatherForecasts> response) {
+             if(response.code()==200){
+                 weatherForecasts weatherForecasts=response.body();
+              ForecastLists forecastLists =OpenWeatherDataParser.getForecastsDataFromWeatherForecasts(weatherForecasts);
+              mHoursForecastAdapter.updateData(forecastLists.getHoursForecasts());
+              mDaysForecastsAdapter.updateData(forecastLists.getDaysForecasts());
+              mHoursForecastsRecyclerView.setVisibility(View.VISIBLE);
+              mDaysForecastRecyclerView.setVisibility(View.VISIBLE);
+             }
+         }
+         @Override
+         public void onFailure(Call<weatherForecasts> call, Throwable t) {
+             Toast.makeText(MainActivity.this,t.getMessage(),Toast.LENGTH_LONG).show();
+         }
+     });
     }
 
     //for scrolling between fragments
@@ -228,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == Requests_Settings && resultCode == RESULT_OK){
             requestForecastsInfo();
-            getRequestInfo();
+            requestWeatherInfo();
         }
     }
 
@@ -236,7 +206,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        mNetworkUtils.cancelRequests(TAG);
+        mForecastsCall.cancel();
+        mWeatherInfoCall.cancel();
+
     }
 }
 

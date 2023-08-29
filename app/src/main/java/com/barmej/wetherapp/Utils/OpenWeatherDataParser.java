@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
+import com.barmej.wetherapp.Data.weatherForecasts;
 public class OpenWeatherDataParser {
     private static final String OWM_MESSAGE_CODE = "cod";
     private static final String OWM_CITY = "city";
@@ -76,9 +76,7 @@ public class OpenWeatherDataParser {
         return weatherInfo;
     }
 
-    public static ForecastLists getForecastsDataFromJson(JSONObject forecastsJson) throws JSONException {
-        JSONArray jsonForecastsArray = forecastsJson.getJSONArray(OWM_LIST);
-
+    public static ForecastLists getForecastsDataFromWeatherForecasts(weatherForecasts weatherForecasts)  {
         List<Forecast> hoursForecasts=new ArrayList<>();
         LinkedHashMap<String, List<Forecast>> daysForecasts = new LinkedHashMap<>();
 
@@ -86,41 +84,12 @@ public class OpenWeatherDataParser {
         String currentDay = df.format(new Date());
         int hoursForecastsCount = 0;
 
-        for ( int i=0;i<jsonForecastsArray.length();i++){
-            JSONObject singleForecastJson = jsonForecastsArray.getJSONObject(i);
-            JSONObject weatherObject = singleForecastJson.getJSONArray(OWM_WEATHER).getJSONObject(0);
-            JSONObject mainObject = singleForecastJson.getJSONObject(OWM_MAIN);
-            JSONObject windObject = singleForecastJson.getJSONObject(OWM_WIND);
-
-            Forecast forecast = new Forecast();
-            forecast.setDt(singleForecastJson.getLong(OWM_DATE));
-            forecast.setDtTxt(singleForecastJson.getString(OWM_DATE_TEXT));
-            Main main = new Main();
-            main.setTemp(mainObject.getDouble(OWM_TEMPERATURE));
-            main.setTempMax(mainObject.getDouble(OWM_MAX));
-            main.setTempMin(mainObject.getDouble(OWM_MIN));
-            main.setHumidity(mainObject.getInt(OWM_HUMIDITY));
-            main.setPressure(mainObject.getLong(OWM_PRESSURE));
-            forecast.setMain(main);
-            Wind wind = new Wind();
-            wind.setSpeed(windObject.getDouble(OWM_WINDSPEED));
-            wind.setDeg(windObject.getLong(OWM_WIND_DIRECTION));
-            forecast.setWind(wind);
-            Weather weather = new Weather();
-            weather.setDescription(weatherObject.getString(OWM_WEATHER_DESCRIPTION));
-            weather.setIcon(weatherObject.getString(OWM_WEATHER_ICON));
-            List<Weather> weatherList = new ArrayList<>();
-            weatherList.add(weather);
-            forecast.setWeather(weatherList);
-
+        for ( int i=0;i<weatherForecasts.getList().size();i++){
+            Forecast forecast =weatherForecasts.getList().get(i);
             if (hoursForecastsCount++ < 8) {
                 hoursForecasts.add(forecast);
             }
-
-
-
             String date = forecast.getDtTxt().split(" ")[0];
-
             if (!date.equals(currentDay)) {
                 if (daysForecasts.containsKey(date)) {
                     List<Forecast> forecasts = daysForecasts.get(date);
@@ -132,9 +101,7 @@ public class OpenWeatherDataParser {
                     daysForecasts.put(date, forecasts);
                 }
             }
-
         }
-
         ForecastLists forecastsData = new ForecastLists();
         forecastsData.setHoursForecasts(hoursForecasts);
         List<List<Forecast>> listOfDaysForecasts = new ArrayList<>();

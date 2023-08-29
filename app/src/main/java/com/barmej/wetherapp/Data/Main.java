@@ -1,5 +1,9 @@
 package com.barmej.wetherapp.Data;
 
+import com.google.gson.annotations.SerializedName;
+
+import kotlin.jvm.Synchronized;
+
 public class Main {
     public double getTemp() {
         return temp;
@@ -42,7 +46,9 @@ public class Main {
     }
 
     private double temp;
+@SerializedName("temp_min")
     private double tempMin;
+@SerializedName("temp_max")
     private double tempMax;
     private double pressure;
     private double humidity;
