@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Data;
+package com.barmej.wetherapp.Data.Entity;
 
 import java.util.List;
 

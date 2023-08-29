@@ -1,8 +1,6 @@
-package com.barmej.wetherapp.Data;
+package com.barmej.wetherapp.Data.Entity;
 
 import com.google.gson.annotations.SerializedName;
-
-import kotlin.jvm.Synchronized;
 
 public class Main {
     public double getTemp() {

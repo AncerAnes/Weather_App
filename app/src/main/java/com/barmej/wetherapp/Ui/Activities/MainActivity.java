@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Activities;
+package com.barmej.wetherapp.Ui.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,9 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,27 +19,20 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.barmej.wetherapp.Data.Forecast;
-import com.barmej.wetherapp.Adapters.DaysForecastAdapter;
-import com.barmej.wetherapp.Adapters.HoursForecastAdapter;
-import com.barmej.wetherapp.Data.ForecastLists;
-import com.barmej.wetherapp.Data.Weather;
-import com.barmej.wetherapp.Data.WeatherInfo;
-import com.barmej.wetherapp.Data.weatherForecasts;
+import com.barmej.wetherapp.Data.OnDataDeliveryListener;
+import com.barmej.wetherapp.Data.WeatherDataRepository;
+import com.barmej.wetherapp.Ui.Activities.Adapters.DaysForecastAdapter;
+import com.barmej.wetherapp.Ui.Activities.Adapters.HoursForecastAdapter;
+import com.barmej.wetherapp.Data.Entity.ForecastLists;
+import com.barmej.wetherapp.Data.Entity.WeatherInfo;
+import com.barmej.wetherapp.Data.Entity.weatherForecasts;
 import com.barmej.wetherapp.R;
-import com.barmej.wetherapp.Utils.CustomDateUtils;
 import com.barmej.wetherapp.Utils.OpenWeatherDataParser;
-import com.barmej.wetherapp.Utils.sharedPreferenceHelper;
-import com.barmej.wetherapp.fragments.PrimaryWeatherInfoFragment;
-import com.barmej.wetherapp.fragments.SecondaryWeatherInfoFragment;
-import com.barmej.wetherapp.network.NetworkUtils;
+import com.barmej.wetherapp.Ui.Activities.fragments.PrimaryWeatherInfoFragment;
+import com.barmej.wetherapp.Ui.Activities.fragments.SecondaryWeatherInfoFragment;
+import com.barmej.wetherapp.Data.network.NetworkUtils;
 import com.google.android.material.tabs.TabLayout;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout mHeaderLayout;
     private HeaderFragmentAdapter headerFragmentAdapter;
     private ViewPager viewPager;
-    private NetworkUtils mNetworkUtils ;
-    private static final String TAG =MainActivity.class.getSimpleName();
+   private WeatherDataRepository weatherDataRepository;
+
     private static final int Requests_Settings =0;
     private Call <WeatherInfo> mWeatherInfoCall;
     private Call<weatherForecasts> mForecastsCall;
@@ -89,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         mDaysForecastRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mDaysForecastRecyclerView.setAdapter(mDaysForecastsAdapter);
 
-        mNetworkUtils = NetworkUtils.getInstance(this);
+        weatherDataRepository=WeatherDataRepository.getInstance(this);
 
         requestForecastsInfo();
         requestWeatherInfo();
@@ -101,42 +92,35 @@ public class MainActivity extends AppCompatActivity {
     }
     //request and response of data in background thread
     private void requestWeatherInfo(){
-        mWeatherInfoCall=mNetworkUtils.getApiInterface().getWeatherInfo(mNetworkUtils.getQueryMap());
-        mWeatherInfoCall.enqueue(new Callback<WeatherInfo>() {
-            @Override
-            public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
-              if(response.code()==200){
-                  WeatherInfo weatherInfo=response.body();
-                  headerFragmentAdapter.updateData(weatherInfo);
-                  mHeaderLayout.setVisibility(View.VISIBLE);
-              }
-            }
-            @Override
-            public void onFailure(Call<WeatherInfo> call, Throwable t) {
-              Toast.makeText(MainActivity.this,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
+      weatherDataRepository.getWeatherInfo(new OnDataDeliveryListener<WeatherInfo>() {
+          @Override
+          public void OnDataDelivery(WeatherInfo weatherInfo) {
+              headerFragmentAdapter.updateData(weatherInfo);
+              mHeaderLayout.setVisibility(View.VISIBLE);
+          }
+
+          @Override
+          public void OnErrorOccurred(Throwable throwable) {
+              Toast.makeText(MainActivity.this,throwable.getMessage(),Toast.LENGTH_LONG).show();
+          }
+      });
     }
 
     private void requestForecastsInfo() {
-     mForecastsCall=mNetworkUtils.getApiInterface().getForecast(mNetworkUtils.getQueryMap());
-     mForecastsCall.enqueue(new Callback<weatherForecasts>() {
-         @Override
-         public void onResponse(Call<weatherForecasts> call, Response<weatherForecasts> response) {
-             if(response.code()==200){
-                 weatherForecasts weatherForecasts=response.body();
-              ForecastLists forecastLists =OpenWeatherDataParser.getForecastsDataFromWeatherForecasts(weatherForecasts);
+      weatherDataRepository.getForecastsInfo(new OnDataDeliveryListener<ForecastLists>() {
+          @Override
+          public void OnDataDelivery(ForecastLists forecastLists) {
               mHoursForecastAdapter.updateData(forecastLists.getHoursForecasts());
               mDaysForecastsAdapter.updateData(forecastLists.getDaysForecasts());
               mHoursForecastsRecyclerView.setVisibility(View.VISIBLE);
               mDaysForecastRecyclerView.setVisibility(View.VISIBLE);
-             }
-         }
-         @Override
-         public void onFailure(Call<weatherForecasts> call, Throwable t) {
-             Toast.makeText(MainActivity.this,t.getMessage(),Toast.LENGTH_LONG).show();
-         }
-     });
+          }
+
+          @Override
+          public void OnErrorOccurred(Throwable throwable) {
+              Toast.makeText(MainActivity.this,throwable.getMessage(),Toast.LENGTH_LONG).show();
+          }
+      });
     }
 
     //for scrolling between fragments
@@ -206,9 +190,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        mForecastsCall.cancel();
-        mWeatherInfoCall.cancel();
-
+        weatherDataRepository.cancelRequests();
     }
 }
 

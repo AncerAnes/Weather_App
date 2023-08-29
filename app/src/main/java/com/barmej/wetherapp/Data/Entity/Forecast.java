@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Data;
+package com.barmej.wetherapp.Data.Entity;
 
 import com.google.gson.annotations.SerializedName;
 

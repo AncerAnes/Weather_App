@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Adapters;
+package com.barmej.wetherapp.Ui.Activities.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,8 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.barmej.wetherapp.Data.Forecast;
-import com.barmej.wetherapp.Data.WeatherInfo;
+import com.barmej.wetherapp.Data.Entity.Forecast;
 import com.barmej.wetherapp.R;
 import com.barmej.wetherapp.Utils.CustomDateUtils;
 import com.barmej.wetherapp.Utils.WeatherUtils;

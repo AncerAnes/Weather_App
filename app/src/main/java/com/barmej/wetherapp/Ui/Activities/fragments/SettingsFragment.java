@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.fragments;
+package com.barmej.wetherapp.Ui.Activities.fragments;
 
 import android.app.Activity;
 import android.content.SharedPreferences;

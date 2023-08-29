@@ -1,13 +1,12 @@
 package com.barmej.wetherapp.Utils;
 
-import com.barmej.wetherapp.Data.Forecast;
-import com.barmej.wetherapp.Data.ForecastLists;
-import com.barmej.wetherapp.Data.Main;
-import com.barmej.wetherapp.Data.Weather;
-import com.barmej.wetherapp.Data.WeatherInfo;
-import com.barmej.wetherapp.Data.Wind;
+import com.barmej.wetherapp.Data.Entity.Forecast;
+import com.barmej.wetherapp.Data.Entity.ForecastLists;
+import com.barmej.wetherapp.Data.Entity.Main;
+import com.barmej.wetherapp.Data.Entity.Weather;
+import com.barmej.wetherapp.Data.Entity.WeatherInfo;
+import com.barmej.wetherapp.Data.Entity.Wind;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import com.barmej.wetherapp.Data.weatherForecasts;
+import com.barmej.wetherapp.Data.Entity.weatherForecasts;
 public class OpenWeatherDataParser {
     private static final String OWM_MESSAGE_CODE = "cod";
     private static final String OWM_CITY = "city";

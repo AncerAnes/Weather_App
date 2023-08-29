@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Activities;
+package com.barmej.wetherapp.Ui.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 

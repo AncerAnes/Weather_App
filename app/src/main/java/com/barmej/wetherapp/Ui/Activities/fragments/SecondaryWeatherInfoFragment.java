@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.fragments;
+package com.barmej.wetherapp.Ui.Activities.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.barmej.wetherapp.Data.WeatherInfo;
+import com.barmej.wetherapp.Data.Entity.WeatherInfo;
 import com.barmej.wetherapp.R;
 import com.barmej.wetherapp.Utils.WeatherUtils;
 

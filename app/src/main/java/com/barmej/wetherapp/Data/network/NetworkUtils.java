@@ -1,24 +1,13 @@
-package com.barmej.wetherapp.network;
+package com.barmej.wetherapp.Data.network;
 
-import android.app.GameState;
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
 
 import com.barmej.wetherapp.R;
 import com.barmej.wetherapp.Utils.sharedPreferenceHelper;
-import com.google.gson.Gson;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Scanner;
 
-import kotlin.jvm.Synchronized;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
