@@ -11,11 +11,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.barmej.wetherapp.Data.Entity.WeatherInfo;
 import com.barmej.wetherapp.R;
 import com.barmej.wetherapp.Utils.CustomDateUtils;
 import com.barmej.wetherapp.Utils.WeatherUtils;
+import com.barmej.wetherapp.ViewModel.MainViewModel;
 
 public class PrimaryWeatherInfoFragment extends Fragment {
     private ImageView mIconView;
@@ -48,14 +51,15 @@ public class PrimaryWeatherInfoFragment extends Fragment {
         mTempTextView=mainView.findViewById(R.id.temperature);
         mHighLowTempView=mainView.findViewById(R.id.high_low_temperature);
         super.onActivityCreated(savedInstanceState);
-        showWeatherInfo();
+        MainViewModel mainViewModel= ViewModelProviders.of(this).get(MainViewModel.class);
+        mainViewModel.getWeatherInfoLiveData().observe(this , new Observer<WeatherInfo>() {
+            @Override
+            public void onChanged(WeatherInfo weatherInfo) {
+                mWeatherInfo=weatherInfo;
+                showWeatherInfo();
+            }
+        });
     }
-
-    public void updateWeatherInfo(WeatherInfo weatherInfo){
-     mWeatherInfo=weatherInfo;
-        showWeatherInfo();
-    }
-
 
     @SuppressLint("StringFormatMatches")
     private void showWeatherInfo() {

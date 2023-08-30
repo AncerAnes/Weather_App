@@ -6,6 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -31,6 +36,7 @@ import com.barmej.wetherapp.Utils.OpenWeatherDataParser;
 import com.barmej.wetherapp.Ui.Activities.fragments.PrimaryWeatherInfoFragment;
 import com.barmej.wetherapp.Ui.Activities.fragments.SecondaryWeatherInfoFragment;
 import com.barmej.wetherapp.Data.network.NetworkUtils;
+import com.barmej.wetherapp.ViewModel.MainViewModel;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -51,11 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout mHeaderLayout;
     private HeaderFragmentAdapter headerFragmentAdapter;
     private ViewPager viewPager;
-   private WeatherDataRepository weatherDataRepository;
 
     private static final int Requests_Settings =0;
-    private Call <WeatherInfo> mWeatherInfoCall;
-    private Call<weatherForecasts> mForecastsCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +83,6 @@ public class MainActivity extends AppCompatActivity {
         mDaysForecastRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mDaysForecastRecyclerView.setAdapter(mDaysForecastsAdapter);
 
-        weatherDataRepository=WeatherDataRepository.getInstance(this);
-
         requestForecastsInfo();
         requestWeatherInfo();
 
@@ -92,35 +93,27 @@ public class MainActivity extends AppCompatActivity {
     }
     //request and response of data in background thread
     private void requestWeatherInfo(){
-      weatherDataRepository.getWeatherInfo(new OnDataDeliveryListener<WeatherInfo>() {
-          @Override
-          public void OnDataDelivery(WeatherInfo weatherInfo) {
-              headerFragmentAdapter.updateData(weatherInfo);
-              mHeaderLayout.setVisibility(View.VISIBLE);
-          }
-
-          @Override
-          public void OnErrorOccurred(Throwable throwable) {
-              Toast.makeText(MainActivity.this,throwable.getMessage(),Toast.LENGTH_LONG).show();
-          }
-      });
+        MainViewModel mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+         mainViewModel.getWeatherInfoLiveData().observe(this, new Observer<WeatherInfo>() {
+            @Override
+            public void onChanged(WeatherInfo weatherInfo) {
+                mHeaderLayout.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void requestForecastsInfo() {
-      weatherDataRepository.getForecastsInfo(new OnDataDeliveryListener<ForecastLists>() {
-          @Override
-          public void OnDataDelivery(ForecastLists forecastLists) {
-              mHoursForecastAdapter.updateData(forecastLists.getHoursForecasts());
-              mDaysForecastsAdapter.updateData(forecastLists.getDaysForecasts());
-              mHoursForecastsRecyclerView.setVisibility(View.VISIBLE);
-              mDaysForecastRecyclerView.setVisibility(View.VISIBLE);
-          }
-
-          @Override
-          public void OnErrorOccurred(Throwable throwable) {
-              Toast.makeText(MainActivity.this,throwable.getMessage(),Toast.LENGTH_LONG).show();
-          }
-      });
+        MainViewModel mainViewModel=ViewModelProviders.of(this).get(MainViewModel.class);
+        mainViewModel.getForecastListsLiveData().observe(this, new Observer<ForecastLists>() {
+            @Override
+            public void onChanged(ForecastLists forecastLists) {
+                //LiveData is the broker between the server and MainActivity,it used in place of The callBack of OnDataDeliveryListener because this methode used when the activity alone request data,if there is a dataBase it does not notify with changed
+                mHoursForecastAdapter.updateData(forecastLists.getHoursForecasts());
+                mDaysForecastsAdapter.updateData(forecastLists.getDaysForecasts());
+                mHoursForecastsRecyclerView.setVisibility(View.VISIBLE);
+                mDaysForecastRecyclerView.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     //for scrolling between fragments
@@ -155,10 +148,6 @@ public class MainActivity extends AppCompatActivity {
             fragments.add(position,fragment);
             return fragment;
         }
-        void updateData(WeatherInfo weatherInfo){
-            ((PrimaryWeatherInfoFragment) fragments.get(0)).updateWeatherInfo(weatherInfo);
-            ((SecondaryWeatherInfoFragment) fragments.get(1)).updateWeatherInfo(weatherInfo);
-        }
     }
 
     @Override
@@ -176,7 +165,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -185,12 +173,8 @@ public class MainActivity extends AppCompatActivity {
             requestWeatherInfo();
         }
     }
-
-
     @Override
     protected void onStop() {
         super.onStop();
-        weatherDataRepository.cancelRequests();
     }
 }
-

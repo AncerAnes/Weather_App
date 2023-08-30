@@ -2,8 +2,12 @@ package com.barmej.wetherapp.Data;
 
 import android.content.Context;
 import android.media.MediaSync;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.barmej.wetherapp.Data.Entity.ForecastLists;
 import com.barmej.wetherapp.Data.Entity.WeatherInfo;
@@ -38,25 +42,28 @@ public class WeatherDataRepository {
         networkUtils=NetworkUtils.getInstance(context);
     }
 
-    public void getWeatherInfo(final OnDataDeliveryListener<WeatherInfo> onDataDeliveryListener ){
-        mWeatherInfoCall=networkUtils.getApiInterface().getWeatherInfo(networkUtils.getQueryMap());
+    public LiveData <WeatherInfo> getWeatherInfo(){
+        MutableLiveData <WeatherInfo> weatherInfoMutableLiveData=new MutableLiveData<>();
+                mWeatherInfoCall=networkUtils.getApiInterface().getWeatherInfo(networkUtils.getQueryMap());
         mWeatherInfoCall.enqueue(new Callback<WeatherInfo>() {
             @Override
             public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
                 if(response.code()==200){
                     WeatherInfo weatherInfo=response.body();
                     if (weatherInfo !=null){
-                    onDataDeliveryListener.OnDataDelivery(weatherInfo);
+                    weatherInfoMutableLiveData.setValue(weatherInfo);
                 }
                 }
             }
             @Override
             public void onFailure(Call<WeatherInfo> call, Throwable t) {
-                onDataDeliveryListener.OnErrorOccurred(t);
+                Log.d(TAG,t.getMessage());
             }
         });
+        return weatherInfoMutableLiveData;
     }
-    public void getForecastsInfo(final OnDataDeliveryListener<ForecastLists> onDataDeliveryListener){
+    public LiveData <ForecastLists> getForecastsInfo(){
+        MutableLiveData <ForecastLists> forecastListsMutableLiveData=new MutableLiveData<>();
         mForecastsCall=networkUtils.getApiInterface().getForecast(networkUtils.getQueryMap());
         mForecastsCall.enqueue(new Callback<weatherForecasts>() {
             @Override
@@ -65,16 +72,16 @@ public class WeatherDataRepository {
                     weatherForecasts weatherForecasts=response.body();
                     if(weatherForecasts!= null){
                     ForecastLists forecastLists = OpenWeatherDataParser.getForecastsDataFromWeatherForecasts(weatherForecasts);
-                    onDataDeliveryListener.OnDataDelivery(forecastLists);
-
+                    forecastListsMutableLiveData.setValue(forecastLists);
                 }
                 }
             }
             @Override
             public void onFailure(Call<weatherForecasts> call, Throwable t) {
-                onDataDeliveryListener.OnErrorOccurred(t);
+                Log.d(TAG,t.getMessage());
             }
         });
+        return forecastListsMutableLiveData;
     }
     public void cancelRequests(){
         mForecastsCall.cancel();
