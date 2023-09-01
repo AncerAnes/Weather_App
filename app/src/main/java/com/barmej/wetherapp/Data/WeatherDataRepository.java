@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.barmej.wetherapp.Data.DataBase.AppDataBase;
 import com.barmej.wetherapp.Data.Entity.ForecastLists;
 import com.barmej.wetherapp.Data.Entity.WeatherInfo;
 import com.barmej.wetherapp.Data.Entity.weatherForecasts;
@@ -25,8 +26,11 @@ public class WeatherDataRepository {
     private static final Object LOCK=new Object();
     private static Context context;
     private NetworkUtils networkUtils;
+    private MutableLiveData <WeatherInfo> weatherInfoMutableLiveData;
+    private MutableLiveData <ForecastLists> forecastListsMutableLiveData;
     private Call<WeatherInfo> mWeatherInfoCall;
     private Call<weatherForecasts> mForecastsCall;
+
     private static final String TAG =WeatherDataRepository.class.getSimpleName();
 
     public static WeatherDataRepository getInstance(Context context){
@@ -40,11 +44,12 @@ public class WeatherDataRepository {
 
     public WeatherDataRepository(Context context) {
         networkUtils=NetworkUtils.getInstance(context);
+        weatherInfoMutableLiveData=new MutableLiveData<>();
+        forecastListsMutableLiveData=new MutableLiveData<>();
     }
 
     public LiveData <WeatherInfo> getWeatherInfo(){
-        MutableLiveData <WeatherInfo> weatherInfoMutableLiveData=new MutableLiveData<>();
-                mWeatherInfoCall=networkUtils.getApiInterface().getWeatherInfo(networkUtils.getQueryMap());
+        mWeatherInfoCall=networkUtils.getApiInterface().getWeatherInfo(networkUtils.getQueryMap());
         mWeatherInfoCall.enqueue(new Callback<WeatherInfo>() {
             @Override
             public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
@@ -63,7 +68,6 @@ public class WeatherDataRepository {
         return weatherInfoMutableLiveData;
     }
     public LiveData <ForecastLists> getForecastsInfo(){
-        MutableLiveData <ForecastLists> forecastListsMutableLiveData=new MutableLiveData<>();
         mForecastsCall=networkUtils.getApiInterface().getForecast(networkUtils.getQueryMap());
         mForecastsCall.enqueue(new Callback<weatherForecasts>() {
             @Override
