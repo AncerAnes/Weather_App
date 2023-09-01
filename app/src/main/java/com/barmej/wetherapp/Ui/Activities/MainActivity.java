@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.lifecycle.ViewModelStoreOwner;
@@ -23,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
 import com.barmej.wetherapp.Data.OnDataDeliveryListener;
 import com.barmej.wetherapp.Data.WeatherDataRepository;
 import com.barmej.wetherapp.Ui.Activities.Adapters.DaysForecastAdapter;
@@ -57,9 +57,6 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout mHeaderLayout;
     private HeaderFragmentAdapter headerFragmentAdapter;
     private ViewPager viewPager;
-
-    private static final int Requests_Settings =0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestForecastsInfo() {
-        MainViewModel mainViewModel=ViewModelProviders.of(this).get(MainViewModel.class);
+        MainViewModel mainViewModel= ViewModelProviders.of(this).get(MainViewModel.class);
         mainViewModel.getForecastListsLiveData().observe(this, new Observer<ForecastLists>() {
             @Override
             public void onChanged(ForecastLists forecastLists) {
@@ -160,21 +157,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id=item.getItemId();
         if(id == R.id.action_settings){
-            startActivityForResult(new Intent(this,SettingsActivity.class),Requests_Settings);
+            startActivity(new Intent(this,SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == Requests_Settings && resultCode == RESULT_OK){
-            requestForecastsInfo();
-            requestWeatherInfo();
-        }
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
     }
 }

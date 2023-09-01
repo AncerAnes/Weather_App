@@ -11,6 +11,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragment;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
+
+import com.barmej.wetherapp.Data.WeatherDataRepository;
 import com.barmej.wetherapp.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -61,9 +63,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         if (preference != null){
             setPreferenceSummary(preference);
         }
-        if(getActivity() != null){
-            getActivity().setResult(Activity.RESULT_OK);
-        }
+        WeatherDataRepository weatherDataRepository=WeatherDataRepository.getInstance(getContext());
+        weatherDataRepository.getWeatherInfo();
+        weatherDataRepository.getForecastsInfo();
     }
 
     @Override

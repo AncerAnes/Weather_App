@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import okhttp3.OkHttpClient;
+
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -52,7 +53,6 @@ public class NetworkUtils {
         Retrofit retrofit=new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
                 .build();
         openWeatherApiInterface=retrofit.create(OpenWeatherApiInterface.class);
     }
