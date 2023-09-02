@@ -105,10 +105,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(ForecastLists forecastLists) {
                 //LiveData is the broker between the server and MainActivity,it used in place of The callBack of OnDataDeliveryListener because this methode used when the activity alone request data,if there is a dataBase it does not notify with changed
+                if(forecastLists != null){
                 mHoursForecastAdapter.updateData(forecastLists.getHoursForecasts());
                 mDaysForecastsAdapter.updateData(forecastLists.getDaysForecasts());
                 mHoursForecastsRecyclerView.setVisibility(View.VISIBLE);
                 mDaysForecastRecyclerView.setVisibility(View.VISIBLE);
+            }
             }
         });
     }

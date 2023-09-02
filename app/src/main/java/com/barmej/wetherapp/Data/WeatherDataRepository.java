@@ -1,10 +1,7 @@
 package com.barmej.wetherapp.Data;
 
 import android.content.Context;
-import android.media.MediaSync;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -14,7 +11,6 @@ import com.barmej.wetherapp.Data.Entity.ForecastLists;
 import com.barmej.wetherapp.Data.Entity.WeatherInfo;
 import com.barmej.wetherapp.Data.Entity.weatherForecasts;
 import com.barmej.wetherapp.Data.network.NetworkUtils;
-import com.barmej.wetherapp.Ui.Activities.MainActivity;
 import com.barmej.wetherapp.Utils.OpenWeatherDataParser;
 
 import retrofit2.Call;
@@ -32,6 +28,7 @@ public class WeatherDataRepository {
     private Call<weatherForecasts> mForecastsCall;
 
     private static final String TAG =WeatherDataRepository.class.getSimpleName();
+    private AppDataBase appDataBase;
 
     public static WeatherDataRepository getInstance(Context context){
         if (sInstance==null) {
@@ -46,9 +43,18 @@ public class WeatherDataRepository {
         networkUtils=NetworkUtils.getInstance(context);
         weatherInfoMutableLiveData=new MutableLiveData<>();
         forecastListsMutableLiveData=new MutableLiveData<>();
+        appDataBase=AppDataBase.getInstance(context);
     }
 
+private void updateWeatherInfo(WeatherInfo weatherInfo){
+  appDataBase.weatherInfoDao().addWeatherInfo(weatherInfo);
+  }
+
+  private void  updateForecastsList(ForecastLists forecastLists){
+        appDataBase.ForecastsListsDao().addForecastsList(forecastLists);
+  }
     public LiveData <WeatherInfo> getWeatherInfo(){
+        final LiveData <WeatherInfo> weatherInfoLiveData =appDataBase.weatherInfoDao().getWeatherInfo();
         mWeatherInfoCall=networkUtils.getApiInterface().getWeatherInfo(networkUtils.getQueryMap());
         mWeatherInfoCall.enqueue(new Callback<WeatherInfo>() {
             @Override
@@ -56,7 +62,7 @@ public class WeatherDataRepository {
                 if(response.code()==200){
                     WeatherInfo weatherInfo=response.body();
                     if (weatherInfo !=null){
-                    weatherInfoMutableLiveData.setValue(weatherInfo);
+                    updateWeatherInfo(weatherInfo);
                 }
                 }
             }
@@ -65,9 +71,10 @@ public class WeatherDataRepository {
                 Log.d(TAG,t.getMessage());
             }
         });
-        return weatherInfoMutableLiveData;
+        return weatherInfoLiveData;
     }
     public LiveData <ForecastLists> getForecastsInfo(){
+        final LiveData <ForecastLists> forecastListsLiveData =appDataBase.ForecastsListsDao().getForecastsList();
         mForecastsCall=networkUtils.getApiInterface().getForecast(networkUtils.getQueryMap());
         mForecastsCall.enqueue(new Callback<weatherForecasts>() {
             @Override
@@ -76,7 +83,7 @@ public class WeatherDataRepository {
                     weatherForecasts weatherForecasts=response.body();
                     if(weatherForecasts!= null){
                     ForecastLists forecastLists = OpenWeatherDataParser.getForecastsDataFromWeatherForecasts(weatherForecasts);
-                    forecastListsMutableLiveData.setValue(forecastLists);
+                    updateForecastsList(forecastLists);
                 }
                 }
             }
@@ -85,7 +92,7 @@ public class WeatherDataRepository {
                 Log.d(TAG,t.getMessage());
             }
         });
-        return forecastListsMutableLiveData;
+        return forecastListsLiveData;
     }
     public void cancelRequests(){
         mForecastsCall.cancel();

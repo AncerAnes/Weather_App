@@ -8,12 +8,16 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
+import com.barmej.wetherapp.Data.DataBase.dao.ForecastsListsDao;
 import com.barmej.wetherapp.Data.DataBase.dao.WeatherInfoDao;
+import com.barmej.wetherapp.Data.Entity.ForecastLists;
 import com.barmej.wetherapp.Data.Entity.WeatherInfo;
 import com.barmej.wetherapp.Data.network.NetworkUtils;
+import com.barmej.wetherapp.converters.DaysForecastsConverter;
+import com.barmej.wetherapp.converters.HoursForecastsConverter;
 import com.barmej.wetherapp.converters.WeatherListConverter;
-@Database(entities = {WeatherInfo.class},version = 1,exportSchema = false)
-@TypeConverters({WeatherListConverter.class})
+@Database(entities = {WeatherInfo.class, ForecastLists.class},version = 2,exportSchema = false)
+@TypeConverters({WeatherListConverter.class, HoursForecastsConverter.class, DaysForecastsConverter.class})
 public abstract class AppDataBase extends RoomDatabase {
     private static final Object LOCK= new Object();
     public static AppDataBase sInstance;
@@ -27,12 +31,13 @@ public abstract class AppDataBase extends RoomDatabase {
                     sInstance= Room.databaseBuilder(
                             context.getApplicationContext(),
                             AppDataBase.class,
-                            DATABASE_NAME
-                    ).build();
+                            AppDataBase.DATABASE_NAME
+                    ).fallbackToDestructiveMigration().allowMainThreadQueries().build();
                 }
             }
         }
         return sInstance;
     }
-public abstract WeatherInfoDao weatherInfoDao();
+    public abstract WeatherInfoDao weatherInfoDao();
+    public abstract ForecastsListsDao  ForecastsListsDao();
 }
