@@ -32,7 +32,7 @@ public abstract class AppDataBase extends RoomDatabase {
                             context.getApplicationContext(),
                             AppDataBase.class,
                             AppDataBase.DATABASE_NAME
-                    ).fallbackToDestructiveMigration().allowMainThreadQueries().build();
+                    ).fallbackToDestructiveMigration().build();
                 }
             }
         }

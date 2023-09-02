@@ -11,6 +11,7 @@ import com.barmej.wetherapp.Data.Entity.ForecastLists;
 import com.barmej.wetherapp.Data.Entity.WeatherInfo;
 import com.barmej.wetherapp.Data.Entity.weatherForecasts;
 import com.barmej.wetherapp.Data.network.NetworkUtils;
+import com.barmej.wetherapp.Utils.AppExecutor;
 import com.barmej.wetherapp.Utils.OpenWeatherDataParser;
 
 import retrofit2.Call;
@@ -24,6 +25,7 @@ public class WeatherDataRepository {
     private NetworkUtils networkUtils;
     private MutableLiveData <WeatherInfo> weatherInfoMutableLiveData;
     private MutableLiveData <ForecastLists> forecastListsMutableLiveData;
+    private AppExecutor appExecutor;
     private Call<WeatherInfo> mWeatherInfoCall;
     private Call<weatherForecasts> mForecastsCall;
 
@@ -41,17 +43,26 @@ public class WeatherDataRepository {
 
     public WeatherDataRepository(Context context) {
         networkUtils=NetworkUtils.getInstance(context);
-        weatherInfoMutableLiveData=new MutableLiveData<>();
-        forecastListsMutableLiveData=new MutableLiveData<>();
         appDataBase=AppDataBase.getInstance(context);
+        appExecutor=AppExecutor.getInstance();
     }
 
 private void updateWeatherInfo(WeatherInfo weatherInfo){
-  appDataBase.weatherInfoDao().addWeatherInfo(weatherInfo);
+        appExecutor.getDiskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                appDataBase.weatherInfoDao().addWeatherInfo(weatherInfo);
+            }
+        });
   }
 
   private void  updateForecastsList(ForecastLists forecastLists){
-        appDataBase.ForecastsListsDao().addForecastsList(forecastLists);
+       appExecutor.getDiskIO().execute(new Runnable() {
+           @Override
+           public void run() {
+               appDataBase.ForecastsListsDao().addForecastsList(forecastLists);
+           }
+       });
   }
     public LiveData <WeatherInfo> getWeatherInfo(){
         final LiveData <WeatherInfo> weatherInfoLiveData =appDataBase.weatherInfoDao().getWeatherInfo();
