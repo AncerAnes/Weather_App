@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Data;
+package com.barmej.wetherapp.data;
 
 import android.content.Context;
 import android.util.Log;
@@ -6,13 +6,13 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.barmej.wetherapp.Data.DataBase.AppDataBase;
-import com.barmej.wetherapp.Data.Entity.ForecastLists;
-import com.barmej.wetherapp.Data.Entity.WeatherInfo;
-import com.barmej.wetherapp.Data.Entity.weatherForecasts;
-import com.barmej.wetherapp.Data.network.NetworkUtils;
-import com.barmej.wetherapp.Utils.AppExecutor;
-import com.barmej.wetherapp.Utils.OpenWeatherDataParser;
+import com.barmej.wetherapp.data.DataBase.AppDataBase;
+import com.barmej.wetherapp.data.entity.ForecastLists;
+import com.barmej.wetherapp.data.entity.WeatherInfo;
+import com.barmej.wetherapp.data.entity.weatherForecasts;
+import com.barmej.wetherapp.data.network.NetworkUtils;
+import com.barmej.wetherapp.utils.AppExecutor;
+import com.barmej.wetherapp.utils.OpenWeatherDataParser;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +51,7 @@ private void updateWeatherInfo(WeatherInfo weatherInfo){
         appExecutor.getDiskIO().execute(new Runnable() {
             @Override
             public void run() {
+                appDataBase.weatherInfoDao().deleteAllWeatherInfo();
                 appDataBase.weatherInfoDao().addWeatherInfo(weatherInfo);
             }
         });

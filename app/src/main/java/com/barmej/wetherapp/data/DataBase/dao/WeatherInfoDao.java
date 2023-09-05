@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Data.DataBase.dao;
+package com.barmej.wetherapp.data.DataBase.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -8,7 +8,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.barmej.wetherapp.Data.Entity.WeatherInfo;
+import com.barmej.wetherapp.data.entity.WeatherInfo;
 
 @Dao
 public interface WeatherInfoDao {
@@ -24,4 +24,7 @@ public interface WeatherInfoDao {
 
     @Delete
     void deleteWeatherInfo(WeatherInfo weatherInfo);
+
+    @Query("DELETE FROM weather_info")
+    void deleteAllWeatherInfo();
 }

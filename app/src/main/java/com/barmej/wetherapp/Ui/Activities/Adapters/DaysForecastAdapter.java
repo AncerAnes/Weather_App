@@ -8,12 +8,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.library.baseAdapters.BR;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.barmej.wetherapp.Data.Entity.Forecast;
+import com.barmej.wetherapp.data.entity.Forecast;
 import com.barmej.wetherapp.R;
-import com.barmej.wetherapp.Utils.CustomDateUtils;
-import com.barmej.wetherapp.Utils.WeatherUtils;
+import com.barmej.wetherapp.databinding.ItemDayForecastBinding;
+import com.barmej.wetherapp.utils.CustomDateUtils;
+import com.barmej.wetherapp.utils.WeatherUtils;
 
 import java.util.List;
 
@@ -27,25 +30,14 @@ public class DaysForecastAdapter extends RecyclerView.Adapter<DaysForecastAdapte
     @NonNull
     @Override
     public DaysForecastAdapter.ForecastAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_day_forecast, parent, false);
-        return new ForecastAdapterViewHolder(view);
+        ItemDayForecastBinding binding= DataBindingUtil.inflate(LayoutInflater.from(mContext),R.layout.item_day_forecast,parent,false);
+        return new ForecastAdapterViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull DaysForecastAdapter.ForecastAdapterViewHolder holder, int position) {
-        Forecast forecast= mForecasts.get(position).get(0);
-        int weatherImageId = WeatherUtils.getWeatherIcon(forecast.getWeather().get(0).getIcon());
-        holder.iconImageView.setImageResource(weatherImageId);
-        String dateString = CustomDateUtils.getFriendlyDateString(mContext,forecast.getDt(),false);
-        holder.dateTextView.setText(dateString);
-        String description = forecast.getWeather().get(0).getDescription();
-        holder.descriptionTextView.setText(description);
-        double highTemperature = forecast.getMain().getTempMax();
-        String highTemperatureString = mContext.getString(R.string.format_temperature, highTemperature);
-        holder.highTempTextView.setText(highTemperatureString);
-        double lowTemperature = forecast.getMain().getTempMin();
-        String lowTemperatureString = mContext.getString(R.string.format_temperature, lowTemperature);
-        holder.lowTempTextView.setText(lowTemperatureString);
+        Object obj= mForecasts.get(position).get(0);
+        holder.Bind(obj);
     }
 
     @Override
@@ -58,19 +50,13 @@ public class DaysForecastAdapter extends RecyclerView.Adapter<DaysForecastAdapte
     }
 
     class ForecastAdapterViewHolder extends RecyclerView.ViewHolder{
-        final ImageView iconImageView;
-        final TextView dateTextView;
-        final TextView descriptionTextView;
-        final  TextView highTempTextView;
-        final TextView lowTempTextView;
-
-        public ForecastAdapterViewHolder(@NonNull View itemView) {
-            super(itemView);
-            iconImageView =itemView.findViewById(R.id.weather_icon);
-            dateTextView =itemView.findViewById(R.id.date);
-            descriptionTextView =itemView.findViewById(R.id.weather_description);
-            highTempTextView =itemView.findViewById(R.id.high_temperature);
-            lowTempTextView =itemView.findViewById(R.id.low_temperature);
+        ItemDayForecastBinding binding;
+        public ForecastAdapterViewHolder(ItemDayForecastBinding binding) {
+            super(binding.getRoot());
+            this.binding=binding;
+        }
+        void Bind(Object object){
+            binding.setVariable(BR.forecast,object);
         }
     }
     public void updateData(List<List<Forecast>> forecasts) {

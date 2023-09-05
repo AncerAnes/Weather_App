@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Utils;
+package com.barmej.wetherapp.utils;
 
 import android.content.Context;
 import android.util.Log;

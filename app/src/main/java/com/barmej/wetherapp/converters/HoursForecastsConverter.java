@@ -2,8 +2,7 @@ package com.barmej.wetherapp.converters;
 
 import androidx.room.TypeConverter;
 
-import com.barmej.wetherapp.Data.Entity.Forecast;
-import com.barmej.wetherapp.Data.Entity.Weather;
+import com.barmej.wetherapp.data.entity.Forecast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

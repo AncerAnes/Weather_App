@@ -1,11 +1,9 @@
 package com.barmej.wetherapp.converters;
 import androidx.room.TypeConverter;
-import com.barmej.wetherapp.Data.Entity.Weather;
-import com.barmej.wetherapp.Data.Entity.WeatherInfo;
+import com.barmej.wetherapp.data.entity.Weather;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 public class WeatherListConverter {
     @TypeConverter

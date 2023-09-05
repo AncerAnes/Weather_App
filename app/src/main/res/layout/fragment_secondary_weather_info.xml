@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="com.barmej.wetherapp.utils.WeatherUtils"/>
+        <import type="androidx.lifecycle.LiveData"/>
+        <variable
+            name="weatherInfo"
+            type="LiveData&lt;com.barmej.wetherapp.data.entity.WeatherInfo>" />
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout 
     android:id="@+id/extra_details"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -30,7 +38,8 @@
         android:text="@string/humidity_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/pressure_label"
-        app:layout_constraintTop_toBottomOf="@+id/pressure_label" />
+        app:layout_constraintTop_toBottomOf="@+id/pressure_label"
+        />
 
     <!-- Humidity measurement -->
     <TextView
@@ -40,7 +49,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/humidity_label"
         app:layout_constraintStart_toStartOf="@+id/horizontal_middle"
         app:layout_constraintTop_toTopOf="@+id/humidity_label"
-        tools:text="80%" />
+        tools:text="80%"
+        android:text="@{@string/format_humidity(weatherInfo.main.humidity)}"/>
 
     <!-- Pressure label -->
     <TextView
@@ -62,7 +72,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/pressure_label"
         app:layout_constraintStart_toStartOf="@+id/horizontal_middle"
         app:layout_constraintTop_toTopOf="@+id/pressure_label"
-        tools:text="995.5 hPa" />
+        tools:text="995.5 hPa"
+        android:text="@{@string/format_pressure(weatherInfo.main.pressure)}"/>
 
     <!-- Wind label -->
     <TextView
@@ -85,6 +96,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/wind_label"
         app:layout_constraintStart_toStartOf="@+id/horizontal_middle"
         app:layout_constraintTop_toTopOf="@+id/wind_label"
-        tools:text="4.17 km/h NW" />
-
+        tools:text="4.17 km/h NW"
+        android:text="@{WeatherUtils.getFormattedWind(context,weatherInfo.wind.speed,weatherInfo.wind.deg)}"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

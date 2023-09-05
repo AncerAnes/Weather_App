@@ -5,13 +5,10 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.barmej.wetherapp.Data.Entity.ForecastLists;
-import com.barmej.wetherapp.Data.Entity.WeatherInfo;
-import com.barmej.wetherapp.Data.WeatherDataRepository;
-
-import java.io.Closeable;
+import com.barmej.wetherapp.data.entity.ForecastLists;
+import com.barmej.wetherapp.data.entity.WeatherInfo;
+import com.barmej.wetherapp.data.WeatherDataRepository;
 
 public class MainViewModel extends AndroidViewModel {
     private WeatherDataRepository weatherDataRepository;
@@ -19,7 +16,7 @@ public class MainViewModel extends AndroidViewModel {
     private LiveData <ForecastLists> mForecastListsLiveData;
     public MainViewModel(@NonNull Application application) {
         super(application);
-        weatherDataRepository=WeatherDataRepository.getInstance(application);
+        weatherDataRepository=WeatherDataRepository.getInstance(getApplication());
         mWeatherInfoLiveData= weatherDataRepository.getWeatherInfo();
         mForecastListsLiveData=weatherDataRepository.getForecastsInfo();
     }

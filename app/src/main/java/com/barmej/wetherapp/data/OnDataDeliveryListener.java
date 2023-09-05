@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Data;
+package com.barmej.wetherapp.data;
 
 public interface OnDataDeliveryListener<T> {
     void OnDataDelivery(T dataObject);

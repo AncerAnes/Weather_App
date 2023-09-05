@@ -1,6 +1,5 @@
 package com.barmej.wetherapp.Ui.Activities.fragments;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -8,11 +7,10 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragment;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
-import com.barmej.wetherapp.Data.WeatherDataRepository;
+import com.barmej.wetherapp.data.WeatherDataRepository;
 import com.barmej.wetherapp.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {

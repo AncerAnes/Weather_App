@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Utils;
+package com.barmej.wetherapp.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,7 +8,6 @@ import androidx.preference.PreferenceManager;
 import com.barmej.wetherapp.R;
 
 public  final  class sharedPreferenceHelper {
-
         public static String getPreferredWeatherLocation(Context context){
         SharedPreferences sp= PreferenceManager.getDefaultSharedPreferences(context);
         String locationKey= context.getString(R.string.pref_location_key);

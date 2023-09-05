@@ -1,4 +1,4 @@
-package com.barmej.wetherapp.Data.Entity;
+package com.barmej.wetherapp.data.entity;
 
 public class Wind {
     public double getSpeed() {

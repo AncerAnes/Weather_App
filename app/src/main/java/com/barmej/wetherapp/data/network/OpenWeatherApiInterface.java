@@ -1,7 +1,7 @@
-package com.barmej.wetherapp.Data.network;
+package com.barmej.wetherapp.data.network;
 
-import com.barmej.wetherapp.Data.Entity.WeatherInfo;
-import com.barmej.wetherapp.Data.Entity.weatherForecasts;
+import com.barmej.wetherapp.data.entity.WeatherInfo;
+import com.barmej.wetherapp.data.entity.weatherForecasts;
 
 import java.util.Map;
 

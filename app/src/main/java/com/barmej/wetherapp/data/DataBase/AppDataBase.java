@@ -1,18 +1,16 @@
-package com.barmej.wetherapp.Data.DataBase;
+package com.barmej.wetherapp.data.DataBase;
 
 import android.content.Context;
 
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
-import com.barmej.wetherapp.Data.DataBase.dao.ForecastsListsDao;
-import com.barmej.wetherapp.Data.DataBase.dao.WeatherInfoDao;
-import com.barmej.wetherapp.Data.Entity.ForecastLists;
-import com.barmej.wetherapp.Data.Entity.WeatherInfo;
-import com.barmej.wetherapp.Data.network.NetworkUtils;
+import com.barmej.wetherapp.data.DataBase.dao.ForecastsListsDao;
+import com.barmej.wetherapp.data.DataBase.dao.WeatherInfoDao;
+import com.barmej.wetherapp.data.entity.ForecastLists;
+import com.barmej.wetherapp.data.entity.WeatherInfo;
 import com.barmej.wetherapp.converters.DaysForecastsConverter;
 import com.barmej.wetherapp.converters.HoursForecastsConverter;
 import com.barmej.wetherapp.converters.WeatherListConverter;

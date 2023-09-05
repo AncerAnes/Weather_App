@@ -1,9 +1,9 @@
-package com.barmej.wetherapp.Data.network;
+package com.barmej.wetherapp.data.network;
 
 import android.content.Context;
 
 import com.barmej.wetherapp.R;
-import com.barmej.wetherapp.Utils.sharedPreferenceHelper;
+import com.barmej.wetherapp.utils.sharedPreferenceHelper;
 
 import java.util.HashMap;
 import java.util.Locale;

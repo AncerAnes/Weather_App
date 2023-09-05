@@ -8,12 +8,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.library.baseAdapters.BR;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.barmej.wetherapp.Data.Entity.Forecast;
+import com.barmej.wetherapp.data.entity.Forecast;
 import com.barmej.wetherapp.R;
-import com.barmej.wetherapp.Utils.CustomDateUtils;
-import com.barmej.wetherapp.Utils.WeatherUtils;
+import com.barmej.wetherapp.databinding.ItemHourForecastBinding;
+import com.barmej.wetherapp.utils.CustomDateUtils;
+import com.barmej.wetherapp.utils.WeatherUtils;
 
 import java.util.List;
 
@@ -27,21 +30,14 @@ public class HoursForecastAdapter extends RecyclerView.Adapter<HoursForecastAdap
     @NonNull
     @Override
     public HoursForecastAdapter.ForecastAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_hour_forecast,parent,false);
-        ForecastAdapterViewHolder forecastAdapterViewHolder = new ForecastAdapterViewHolder(view);
-        return forecastAdapterViewHolder;
+        ItemHourForecastBinding binding= DataBindingUtil.inflate(LayoutInflater.from(mContext),R.layout.item_hour_forecast,parent,false);
+        return new ForecastAdapterViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull HoursForecastAdapter.ForecastAdapterViewHolder holder, int position) {
-       Forecast forecast= mForecasts.get(position);
-        int weatherImageId = WeatherUtils.getWeatherIcon(forecast.getWeather().get(0).getIcon());
-        holder.iconImageView.setImageResource(weatherImageId);
-        String hourClockString = CustomDateUtils.getHourOfDay(forecast.getDt());
-        holder.timeTextView.setText(hourClockString);
-        double highTemperature = forecast.getMain().getTempMax();
-        String highTemperatureString = mContext.getString(R.string.format_temperature, highTemperature);
-        holder.temperatureTextView.setText(highTemperatureString);
+      Object obj= mForecasts.get(position);
+       holder.Bind(obj);
     }
 
     @Override
@@ -53,15 +49,14 @@ public class HoursForecastAdapter extends RecyclerView.Adapter<HoursForecastAdap
         }
     }
     class ForecastAdapterViewHolder extends RecyclerView.ViewHolder{
-        final ImageView iconImageView;
-        final TextView timeTextView;
-        final TextView temperatureTextView;
-
-        public ForecastAdapterViewHolder(@NonNull View itemView) {
-            super(itemView);
-           iconImageView=itemView.findViewById(R.id.weather_icon);
-           timeTextView=itemView.findViewById(R.id.time);
-           temperatureTextView=itemView.findViewById(R.id.temperature);
+        ItemHourForecastBinding binding;
+        public ForecastAdapterViewHolder( ItemHourForecastBinding binding) {
+            super(binding.getRoot());
+            this.binding=binding;
+        }
+        void Bind(Object object){
+          binding.setVariable(BR.forecast,object);
+          binding.executePendingBindings();
         }
     }
     public void updateData(List<Forecast> forecasts) {

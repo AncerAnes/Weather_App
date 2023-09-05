@@ -1,17 +1,12 @@
 package com.barmej.wetherapp.Ui.Activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -23,28 +18,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
-import com.barmej.wetherapp.Data.OnDataDeliveryListener;
-import com.barmej.wetherapp.Data.WeatherDataRepository;
+
 import com.barmej.wetherapp.Ui.Activities.Adapters.DaysForecastAdapter;
 import com.barmej.wetherapp.Ui.Activities.Adapters.HoursForecastAdapter;
-import com.barmej.wetherapp.Data.Entity.ForecastLists;
-import com.barmej.wetherapp.Data.Entity.WeatherInfo;
-import com.barmej.wetherapp.Data.Entity.weatherForecasts;
+import com.barmej.wetherapp.data.entity.ForecastLists;
+import com.barmej.wetherapp.data.entity.WeatherInfo;
 import com.barmej.wetherapp.R;
-import com.barmej.wetherapp.Utils.OpenWeatherDataParser;
 import com.barmej.wetherapp.Ui.Activities.fragments.PrimaryWeatherInfoFragment;
 import com.barmej.wetherapp.Ui.Activities.fragments.SecondaryWeatherInfoFragment;
-import com.barmej.wetherapp.Data.network.NetworkUtils;
 import com.barmej.wetherapp.ViewModel.MainViewModel;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -86,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         mHeaderLayout.setVisibility(View.INVISIBLE);
         mDaysForecastRecyclerView.setVisibility(View.INVISIBLE);
         mHoursForecastsRecyclerView.setVisibility(View.INVISIBLE);
-
     }
     //request and response of data in background thread
     private void requestWeatherInfo(){
